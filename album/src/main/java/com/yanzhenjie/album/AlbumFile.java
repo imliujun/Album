@@ -15,6 +15,7 @@
  */
 package com.yanzhenjie.album;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
@@ -34,7 +35,10 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
     @IntDef({TYPE_IMAGE, TYPE_VIDEO})
     public @interface MediaType {
     }
-
+    /**
+     * File uri.
+     */
+    private Uri uri;
     /**
      * File path.
      */
@@ -113,11 +117,19 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
     public int hashCode() {
         return mPath != null ? mPath.hashCode() : super.hashCode();
     }
-
+    
+    public Uri getUri() {
+        return uri;
+    }
+    
+    public void setUri(Uri uri) {
+        this.uri = uri;
+    }
+    
     public String getPath() {
         return mPath;
     }
-
+    
     public void setPath(String path) {
         mPath = path;
     }
@@ -210,53 +222,73 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
     public void setDisable(boolean disable) {
         this.isDisable = disable;
     }
-
-    protected AlbumFile(Parcel in) {
-        mPath = in.readString();
-        mBucketName = in.readString();
-        mMimeType = in.readString();
-        mAddDate = in.readLong();
-        mLatitude = in.readFloat();
-        mLongitude = in.readFloat();
-        mSize = in.readLong();
-        mDuration = in.readLong();
-        mThumbPath = in.readString();
-        mMediaType = in.readInt();
-        isChecked = in.readByte() != 0;
-        isDisable = in.readByte() != 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mPath);
-        dest.writeString(mBucketName);
-        dest.writeString(mMimeType);
-        dest.writeLong(mAddDate);
-        dest.writeFloat(mLatitude);
-        dest.writeFloat(mLongitude);
-        dest.writeLong(mSize);
-        dest.writeLong(mDuration);
-        dest.writeString(mThumbPath);
-        dest.writeInt(mMediaType);
-        dest.writeByte((byte) (isChecked ? 1 : 0));
-        dest.writeByte((byte) (isDisable ? 1 : 0));
-    }
-
+    
     @Override
     public int describeContents() {
         return 0;
     }
-
+    
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(this.uri, flags);
+        dest.writeString(this.mPath);
+        dest.writeString(this.mBucketName);
+        dest.writeString(this.mMimeType);
+        dest.writeLong(this.mAddDate);
+        dest.writeFloat(this.mLatitude);
+        dest.writeFloat(this.mLongitude);
+        dest.writeLong(this.mSize);
+        dest.writeLong(this.mDuration);
+        dest.writeString(this.mThumbPath);
+        dest.writeInt(this.mMediaType);
+        dest.writeByte(this.isChecked ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isDisable ? (byte) 1 : (byte) 0);
+    }
+    
+    protected AlbumFile(Parcel in) {
+        this.uri = in.readParcelable(Uri.class.getClassLoader());
+        this.mPath = in.readString();
+        this.mBucketName = in.readString();
+        this.mMimeType = in.readString();
+        this.mAddDate = in.readLong();
+        this.mLatitude = in.readFloat();
+        this.mLongitude = in.readFloat();
+        this.mSize = in.readLong();
+        this.mDuration = in.readLong();
+        this.mThumbPath = in.readString();
+        this.mMediaType = in.readInt();
+        this.isChecked = in.readByte() != 0;
+        this.isDisable = in.readByte() != 0;
+    }
+    
     public static final Creator<AlbumFile> CREATOR = new Creator<AlbumFile>() {
         @Override
-        public AlbumFile createFromParcel(Parcel in) {
-            return new AlbumFile(in);
+        public AlbumFile createFromParcel(Parcel source) {
+            return new AlbumFile(source);
         }
-
+        
         @Override
         public AlbumFile[] newArray(int size) {
             return new AlbumFile[size];
         }
     };
-
+    
+    @Override
+    public String toString() {
+        return "AlbumFile{" +
+            "uri=" + uri +
+            ", mPath='" + mPath + '\'' +
+            ", mBucketName='" + mBucketName + '\'' +
+            ", mMimeType='" + mMimeType + '\'' +
+            ", mAddDate=" + mAddDate +
+            ", mLatitude=" + mLatitude +
+            ", mLongitude=" + mLongitude +
+            ", mSize=" + mSize +
+            ", mDuration=" + mDuration +
+            ", mThumbPath='" + mThumbPath + '\'' +
+            ", mMediaType=" + mMediaType +
+            ", isChecked=" + isChecked +
+            ", isDisable=" + isDisable +
+            '}';
+    }
 }
