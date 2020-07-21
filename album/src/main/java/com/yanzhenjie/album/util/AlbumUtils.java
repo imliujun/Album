@@ -21,19 +21,12 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
-import androidx.annotation.ColorInt;
-import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
-import androidx.core.graphics.drawable.DrawableCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -46,13 +39,16 @@ import com.yanzhenjie.album.widget.divider.Api21ItemDivider;
 import com.yanzhenjie.album.widget.divider.Divider;
 
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 /**
  * <p>Helper for album.</p>
@@ -170,7 +166,23 @@ public class AlbumUtils {
     }
     
     /**
+     * Generates an externally accessed URI based on path.
+     *
+     * @param context context.
+     * @param outPath file path.
+     * @return the uri address of the file.
+     */
+    @NonNull
+    public static Uri getUri(@NonNull Context context, String outPath) {
+        if (outPath == null) {
+            outPath = "";
+        }
+        return getUri(context, new File(outPath));
+    }
+    
+    /**
      * Generates a random jpg file path in the specified directory.
+     *
      * @return file path.
      */
     @NonNull

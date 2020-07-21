@@ -17,8 +17,6 @@ package com.yanzhenjie.album.app.album.data;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-import androidx.annotation.NonNull;
-import androidx.annotation.WorkerThread;
 import android.text.TextUtils;
 
 import com.yanzhenjie.album.AlbumFile;
@@ -26,6 +24,9 @@ import com.yanzhenjie.album.Filter;
 import com.yanzhenjie.album.util.AlbumUtils;
 
 import java.io.File;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 /**
  * Created by YanZhenjie on 2017/10/18.
@@ -48,7 +49,7 @@ public class PathConversion {
         File file = new File(filePath);
         
         AlbumFile albumFile = new AlbumFile();
-        albumFile.setUri(AlbumUtils.getUri(context, new File(filePath)));
+        albumFile.setUri(AlbumUtils.getUri(context, filePath));
         
         File parentFile = file.getParentFile();
         albumFile.setBucketName(parentFile.getName());
