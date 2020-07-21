@@ -23,8 +23,6 @@ import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.webkit.URLUtil;
 
@@ -35,6 +33,9 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.util.HashMap;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 /**
  * Created by YanZhenjie on 2017/10/15.
@@ -64,7 +65,7 @@ public class ThumbnailBuilder {
      */
     @WorkerThread
     @Nullable
-    public String createThumbnailForImage(Context context, Uri imageUri, String mimeType) {
+    public Uri createThumbnailForImage(Context context, Uri imageUri, String mimeType) {
         if (imageUri == null || TextUtils.isEmpty(imageUri.toString())) {
             return null;
         }
@@ -76,7 +77,7 @@ public class ThumbnailBuilder {
         
         File thumbnailFile = randomPath(imageUri.toString());
         if (thumbnailFile.exists()) {
-            return thumbnailFile.getAbsolutePath();
+            return AlbumUtils.getUri(context, thumbnailFile.getAbsolutePath());
         }
         
         Bitmap inBitmap = readImageFromPath(context, imageUri, THUMBNAIL_SIZE, THUMBNAIL_SIZE, mimeType);
@@ -94,7 +95,7 @@ public class ThumbnailBuilder {
             writeStream.write(compressStream.toByteArray());
             writeStream.flush();
             writeStream.close();
-            return thumbnailFile.getAbsolutePath();
+            return AlbumUtils.getUri(context, thumbnailFile.getAbsolutePath());
         } catch (Exception ignored) {
             return null;
         }
@@ -108,14 +109,14 @@ public class ThumbnailBuilder {
      */
     @WorkerThread
     @Nullable
-    public String createThumbnailForVideo(Context context, Uri videoUri) {
+    public Uri createThumbnailForVideo(Context context, Uri videoUri) {
         if (videoUri == null || TextUtils.isEmpty(videoUri.toString())) {
             return null;
         }
         
         File thumbnailFile = randomPath(videoUri.toString());
         if (thumbnailFile.exists()) {
-            return thumbnailFile.getAbsolutePath();
+            return AlbumUtils.getUri(context, thumbnailFile.getAbsolutePath());
         }
         
         try {
@@ -130,7 +131,7 @@ public class ThumbnailBuilder {
             Bitmap bitmap = retriever.getFrameAtTime();
             thumbnailFile.createNewFile();
             bitmap.compress(Bitmap.CompressFormat.JPEG, THUMBNAIL_QUALITY, new FileOutputStream(thumbnailFile));
-            return thumbnailFile.getAbsolutePath();
+            return AlbumUtils.getUri(context, thumbnailFile.getAbsolutePath());
         } catch (Exception ignored) {
             return null;
         }
@@ -160,13 +161,11 @@ public class ThumbnailBuilder {
             options.inSampleSize = computeSampleSize(options, width, height);
             Bitmap sampledBitmap = null;
             boolean attemptSuccess = false;
-            int attempt = 0;
-            while (!attemptSuccess && attempt < 3) {
+            while (!attemptSuccess ) {
                 try {
                     sampledBitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
                     attemptSuccess = true;
                 } catch (Exception e) {
-                    ++attempt;
                     options.inSampleSize *= 2;
                 }
             }

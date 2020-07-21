@@ -68,9 +68,9 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
      */
     private long mDuration;
     /**
-     * Thumb path.
+     * Thumb path uri.
      */
-    private String mThumbPath;
+    private Uri mThumbUri;
     /**
      * MediaType.
      */
@@ -178,12 +178,12 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
         mDuration = duration;
     }
 
-    public String getThumbPath() {
-        return mThumbPath;
+    public Uri getThumbUri() {
+        return mThumbUri;
     }
 
-    public void setThumbPath(String thumbPath) {
-        mThumbPath = thumbPath;
+    public void setThumbPath(Uri thumbUri) {
+        mThumbUri = thumbUri;
     }
 
     @MediaType
@@ -212,6 +212,24 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
     }
     
     @Override
+    public String toString() {
+        return "AlbumFile{" +
+            "uri=" + uri +
+            ", mBucketName='" + mBucketName + '\'' +
+            ", mMimeType='" + mMimeType + '\'' +
+            ", mAddDate=" + mAddDate +
+            ", mLatitude=" + mLatitude +
+            ", mLongitude=" + mLongitude +
+            ", mSize=" + mSize +
+            ", mDuration=" + mDuration +
+            ", mThumbUri='" + mThumbUri + '\'' +
+            ", mMediaType=" + mMediaType +
+            ", isChecked=" + isChecked +
+            ", isDisable=" + isDisable +
+            '}';
+    }
+    
+    @Override
     public int describeContents() {
         return 0;
     }
@@ -226,7 +244,7 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
         dest.writeFloat(this.mLongitude);
         dest.writeLong(this.mSize);
         dest.writeLong(this.mDuration);
-        dest.writeString(this.mThumbPath);
+        dest.writeParcelable(this.mThumbUri, flags);
         dest.writeInt(this.mMediaType);
         dest.writeByte(this.isChecked ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isDisable ? (byte) 1 : (byte) 0);
@@ -241,7 +259,7 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
         this.mLongitude = in.readFloat();
         this.mSize = in.readLong();
         this.mDuration = in.readLong();
-        this.mThumbPath = in.readString();
+        this.mThumbUri = in.readParcelable(Uri.class.getClassLoader());
         this.mMediaType = in.readInt();
         this.isChecked = in.readByte() != 0;
         this.isDisable = in.readByte() != 0;
@@ -258,22 +276,4 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
             return new AlbumFile[size];
         }
     };
-    
-    @Override
-    public String toString() {
-        return "AlbumFile{" +
-            "uri=" + uri +
-            ", mBucketName='" + mBucketName + '\'' +
-            ", mMimeType='" + mMimeType + '\'' +
-            ", mAddDate=" + mAddDate +
-            ", mLatitude=" + mLatitude +
-            ", mLongitude=" + mLongitude +
-            ", mSize=" + mSize +
-            ", mDuration=" + mDuration +
-            ", mThumbPath='" + mThumbPath + '\'' +
-            ", mMediaType=" + mMediaType +
-            ", isChecked=" + isChecked +
-            ", isDisable=" + isDisable +
-            '}';
-    }
 }
