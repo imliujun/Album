@@ -18,7 +18,7 @@ package com.yanzhenjie.album;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -39,10 +39,6 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
      * File uri.
      */
     private Uri uri;
-    /**
-     * File path.
-     */
-    private String mPath;
     /**
      * Folder mName.
      */
@@ -105,9 +101,9 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
     public boolean equals(Object obj) {
         if (obj != null && obj instanceof AlbumFile) {
             AlbumFile o = (AlbumFile) obj;
-            String inPath = o.getPath();
-            if (mPath != null && inPath != null) {
-                return mPath.equals(inPath);
+            Uri inPath = o.getUri();
+            if (uri != null && inPath != null) {
+                return uri.equals(inPath);
             }
         }
         return super.equals(obj);
@@ -115,7 +111,7 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
 
     @Override
     public int hashCode() {
-        return mPath != null ? mPath.hashCode() : super.hashCode();
+        return uri != null ? uri.hashCode() : super.hashCode();
     }
     
     public Uri getUri() {
@@ -124,14 +120,6 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
     
     public void setUri(Uri uri) {
         this.uri = uri;
-    }
-    
-    public String getPath() {
-        return mPath;
-    }
-    
-    public void setPath(String path) {
-        mPath = path;
     }
 
     public String getBucketName() {
@@ -231,7 +219,6 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(this.uri, flags);
-        dest.writeString(this.mPath);
         dest.writeString(this.mBucketName);
         dest.writeString(this.mMimeType);
         dest.writeLong(this.mAddDate);
@@ -247,7 +234,6 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
     
     protected AlbumFile(Parcel in) {
         this.uri = in.readParcelable(Uri.class.getClassLoader());
-        this.mPath = in.readString();
         this.mBucketName = in.readString();
         this.mMimeType = in.readString();
         this.mAddDate = in.readLong();
@@ -277,7 +263,6 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
     public String toString() {
         return "AlbumFile{" +
             "uri=" + uri +
-            ", mPath='" + mPath + '\'' +
             ", mBucketName='" + mBucketName + '\'' +
             ", mMimeType='" + mMimeType + '\'' +
             ", mAddDate=" + mAddDate +

@@ -15,12 +15,13 @@
  */
 package com.yanzhenjie.album.sample.app;
 
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -29,16 +30,17 @@ import android.widget.Toast;
 
 import com.yanzhenjie.album.Action;
 import com.yanzhenjie.album.Album;
+import com.yanzhenjie.album.app.album.data.MediaReader;
 import com.yanzhenjie.album.sample.R;
 
 /**
  * Created by YanZhenjie on 2017/8/17.
  */
 public class CameraActivity extends AppCompatActivity {
-
+    
     TextView mTextView;
     private ImageView mImageView;
-
+    
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,66 +50,65 @@ public class CameraActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.setDisplayHomeAsUpEnabled(true);
-
+        
         mTextView = findViewById(R.id.tv_message);
         mImageView = findViewById(R.id.image_view);
     }
-
+    
     private void takePicture() {
         Album.camera(this)
-                .image()
-//                .filePath()
-                .onResult(new Action<String>() {
-                    @Override
-                    public void onAction(@NonNull String result) {
-                        mTextView.setText(result);
-
-                        Album.getAlbumConfig()
-                                .getAlbumLoader()
-                                .load(mImageView, result);
-                    }
-                })
-                .onCancel(new Action<String>() {
-                    @Override
-                    public void onAction(@NonNull String result) {
-                        Toast.makeText(CameraActivity.this, R.string.canceled, Toast.LENGTH_LONG).show();
-                    }
-                })
-                .start();
+            .image()
+            //                .filePath()
+            .onResult(new Action<String>() {
+                @Override
+                public void onAction(@NonNull String result) {
+                    mTextView.setText(result);
+                    Album.getAlbumConfig()
+                        .getAlbumLoader()
+                        .load(mImageView,Uri.parse(result) );
+                }
+            })
+            .onCancel(new Action<String>() {
+                @Override
+                public void onAction(@NonNull String result) {
+                    Toast.makeText(CameraActivity.this, R.string.canceled, Toast.LENGTH_LONG).show();
+                }
+            })
+            .start();
     }
-
+    
     private void recordVideo() {
         Album.camera(this)
-                .video()
-//                .filePath()
-                .quality(1)
-                .limitDuration(Integer.MAX_VALUE)
-                .limitBytes(Integer.MAX_VALUE)
-                .onResult(new Action<String>() {
-                    @Override
-                    public void onAction(@NonNull String result) {
-                        mTextView.setText(result);
-
-                        Album.getAlbumConfig()
-                                .getAlbumLoader()
-                                .load(mImageView, result);
-                    }
-                })
-                .onCancel(new Action<String>() {
-                    @Override
-                    public void onAction(@NonNull String result) {
-                        Toast.makeText(CameraActivity.this, R.string.canceled, Toast.LENGTH_LONG).show();
-                    }
-                })
-                .start();
+            .video()
+            //                .filePath()
+            .quality(1)
+            .limitDuration(Integer.MAX_VALUE)
+            .limitBytes(Integer.MAX_VALUE)
+            .onResult(new Action<String>() {
+                @Override
+                public void onAction(@NonNull String result) {
+                    mTextView.setText(result);
+                    
+                    Album.getAlbumConfig()
+                        .getAlbumLoader()
+                        .load(mImageView,Uri.parse(result) );
+                }
+            })
+            .onCancel(new Action<String>() {
+                @Override
+                public void onAction(@NonNull String result) {
+                    Toast.makeText(CameraActivity.this, R.string.canceled, Toast.LENGTH_LONG).show();
+                }
+            })
+            .start();
     }
-
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_album_camera, menu);
         return true;
     }
-
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();

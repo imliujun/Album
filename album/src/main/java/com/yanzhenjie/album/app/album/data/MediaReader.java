@@ -16,18 +16,22 @@
 package com.yanzhenjie.album.app.album.data;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.support.annotation.WorkerThread;
+import androidx.annotation.WorkerThread;
 
 import com.yanzhenjie.album.AlbumFile;
 import com.yanzhenjie.album.AlbumFolder;
 import com.yanzhenjie.album.Filter;
 import com.yanzhenjie.album.R;
+import com.yanzhenjie.album.util.AlbumUtils;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -94,27 +98,27 @@ public class MediaReader {
                     long addDate = cursor.getLong(3);
                     float latitude = 0;
                     float longitude = 0;
-                    if (isBeforeAndroidTen()) {
+                    if (AlbumUtils.isBeforeAndroidTen()) {
                         latitude = cursor.getFloat(4);
                         longitude = cursor.getFloat(5);
                     } else {
                         float[] latLong = getMediaLatLong(uri);
-                        if (latLong != null && latLong.length > 1) {
+                        if (latLong.length > 1) {
                             latitude = latLong[0];
                             longitude = latLong[1];
                         }
                     }
                     long size = cursor.getLong(6);
                     
-                    if (!isBeforeAndroidTen()) {
-                        path = MediaStore.Images.Media
-                            .EXTERNAL_CONTENT_URI
-                            .buildUpon()
-                            .appendPath(String.valueOf(id)).build().toString();
-                    }
+                    //                    if (!AlbumUtils.isBeforeAndroidTen()) {
+                    //                        path = MediaStore.Images.Media
+                    //                            .EXTERNAL_CONTENT_URI
+                    //                            .buildUpon()
+                    //                            .appendPath(String.valueOf(id)).build().toString();
+                    //                    }
                     AlbumFile imageFile = new AlbumFile();
                     imageFile.setMediaType(AlbumFile.TYPE_IMAGE);
-                    imageFile.setPath(path);
+                    //                    imageFile.setPath(path);
                     imageFile.setUri(uri);
                     imageFile.setBucketName(bucketName);
                     imageFile.setMimeType(mimeType);
@@ -193,7 +197,7 @@ public class MediaReader {
                 long addDate = cursor.getLong(3);
                 float latitude = 0f;
                 float longitude = 0f;
-                if (isBeforeAndroidTen()) {
+                if (AlbumUtils.isBeforeAndroidTen()) {
                     latitude = cursor.getFloat(4);
                     longitude = cursor.getFloat(5);
                 } else {
@@ -205,15 +209,15 @@ public class MediaReader {
                 }
                 long size = cursor.getLong(6);
                 long duration = cursor.getLong(7);
-                if (!isBeforeAndroidTen()) {
-                    path = MediaStore.Images.Media
-                        .EXTERNAL_CONTENT_URI
-                        .buildUpon()
-                        .appendPath(String.valueOf(id)).build().toString();
-                }
+                //                if (!AlbumUtils.isBeforeAndroidTen()) {
+                //                    path = MediaStore.Video.Media
+                //                        .EXTERNAL_CONTENT_URI
+                //                        .buildUpon()
+                //                        .appendPath(String.valueOf(id)).build().toString();
+                //                }
                 AlbumFile videoFile = new AlbumFile();
                 videoFile.setMediaType(AlbumFile.TYPE_VIDEO);
-                videoFile.setPath(path);
+                //                videoFile.setPath(path);
                 videoFile.setUri(uri);
                 videoFile.setBucketName(bucketName);
                 videoFile.setMimeType(mimeType);
@@ -261,7 +265,7 @@ public class MediaReader {
     
     private float[] getMediaLatLong(Uri mediaUri) {
         float[] latLong = new float[2];
-        if (!isBeforeAndroidTen()) {
+        if (!AlbumUtils.isBeforeAndroidTen()) {
             InputStream stream;
             try {
                 // 从ExifInterface类获取位置信息
@@ -279,6 +283,100 @@ public class MediaReader {
         }
         return latLong;
     }
+    
+    public static String getFilePathByUriBeforeAndroidQ(Context context, Uri uri) {
+        String path = null;
+        // 以 file:// 开头的
+        if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+            path = uri.getPath();
+            return path;
+        }
+        // 以 content:// 开头的，比如 content://media/extenral/images/media/17766
+        if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme()) && Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            Cursor cursor = context.getContentResolver().query(uri, new String[]{MediaStore.Images.Media.DATA}, null, null, null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                    if (columnIndex > -1) {
+                        path = cursor.getString(columnIndex);
+                    }
+                }
+                cursor.close();
+            }
+            return path;
+        }
+        // 4.4及之后的 是以 content:// 开头的，比如 content://com.android.providers.media.documents/document/image%3A235700
+        if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme()) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (DocumentsContract.isDocumentUri(context, uri)) {
+                if (isExternalStorageDocument(uri)) {
+                    // ExternalStorageProvider
+                    final String docId = DocumentsContract.getDocumentId(uri);
+                    final String[] split = docId.split(":");
+                    final String type = split[0];
+                    if ("primary".equalsIgnoreCase(type)) {
+                        path = Environment.getExternalStorageDirectory() + "/" + split[1];
+                        return path;
+                    }
+                } else if (isDownloadsDocument(uri)) {
+                    // DownloadsProvider
+                    final String id = DocumentsContract.getDocumentId(uri);
+                    final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"),
+                        Long.valueOf(id));
+                    path = getDataColumn(context, contentUri, null, null);
+                    return path;
+                } else if (isMediaDocument(uri)) {
+                    // MediaProvider
+                    final String docId = DocumentsContract.getDocumentId(uri);
+                    final String[] split = docId.split(":");
+                    final String type = split[0];
+                    Uri contentUri = null;
+                    if ("image".equals(type)) {
+                        contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                    } else if ("video".equals(type)) {
+                        contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                    } else if ("audio".equals(type)) {
+                        contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                    }
+                    final String selection = "_id=?";
+                    final String[] selectionArgs = new String[]{split[1]};
+                    path = getDataColumn(context, contentUri, selection, selectionArgs);
+                    return path;
+                }
+            }
+        }
+        return null;
+    }
+    
+    private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
+        Cursor cursor = null;
+        final String column = "_data";
+        final String[] projection = {column};
+        try {
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                final int column_index = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(column_index);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+    
+    private static boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri.getAuthority());
+    }
+    
+    private static boolean isDownloadsDocument(Uri uri) {
+        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+    }
+    
+    private static boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+    
     
     /**
      * Scan the list of pictures in the library.
@@ -353,10 +451,4 @@ public class MediaReader {
         return albumFolders;
     }
     
-    /**
-     * @return 是否是 Android 10 （Q） 之前的版本
-     */
-    private static boolean isBeforeAndroidTen() {
-        return android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.Q;
-    }
 }
