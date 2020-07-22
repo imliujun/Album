@@ -19,9 +19,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.PopupMenu;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +26,7 @@ import android.widget.CompoundButton;
 
 import com.yanzhenjie.album.Action;
 import com.yanzhenjie.album.Album;
+import com.yanzhenjie.album.AlbumCameraFile;
 import com.yanzhenjie.album.AlbumFile;
 import com.yanzhenjie.album.AlbumFolder;
 import com.yanzhenjie.album.Filter;
@@ -48,6 +46,10 @@ import com.yanzhenjie.mediascanner.MediaScanner;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.PopupMenu;
 
 /**
  * <p>Responsible for controlling the album data and the overall logic.</p>
@@ -214,10 +216,10 @@ public class AlbumActivity extends BaseActivity implements
         switch (requestCode) {
             case CODE_ACTIVITY_NULL: {
                 if (resultCode == RESULT_OK) {
-                    String imagePath = NullActivity.parsePath(data);
-                    String mimeType = AlbumUtils.getMimeType(imagePath);
+                    AlbumCameraFile albumCameraFile = NullActivity.parseAlbumCameraFile(data);
+                    String mimeType = AlbumUtils.getMimeType(albumCameraFile.getPath());
                     if (!TextUtils.isEmpty(mimeType)) {
-                        mCameraAction.onAction(imagePath);
+                        mCameraAction.onAction(albumCameraFile);
                     }
                 } else {
                     callbackCancel();
@@ -347,16 +349,16 @@ public class AlbumActivity extends BaseActivity implements
             .start();
     }
     
-    private Action<String> mCameraAction = new Action<String>() {
+    private Action<AlbumCameraFile> mCameraAction = new Action<AlbumCameraFile>() {
         @Override
-        public void onAction(@NonNull String result) {
+        public void onAction(@NonNull AlbumCameraFile result) {
             if (mMediaScanner == null) {
                 mMediaScanner = new MediaScanner(AlbumActivity.this);
             }
-            mMediaScanner.scan(result);
+            mMediaScanner.scan(result.getPath());
             PathConversion conversion = new PathConversion(sSizeFilter, sMimeFilter, sDurationFilter);
             PathConvertTask task = new PathConvertTask(AlbumActivity.this, conversion, AlbumActivity.this);
-            task.execute(result);
+            task.execute(result.getPath());
         }
     };
     

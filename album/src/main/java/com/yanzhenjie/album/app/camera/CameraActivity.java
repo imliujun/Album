@@ -23,6 +23,7 @@ import android.text.TextUtils;
 
 import com.yanzhenjie.album.Action;
 import com.yanzhenjie.album.Album;
+import com.yanzhenjie.album.AlbumCameraFile;
 import com.yanzhenjie.album.R;
 import com.yanzhenjie.album.mvp.BaseActivity;
 import com.yanzhenjie.album.util.AlbumUtils;
@@ -50,7 +51,7 @@ public class CameraActivity extends BaseActivity {
     private static final int CODE_ACTIVITY_TAKE_IMAGE = 1;
     private static final int CODE_ACTIVITY_TAKE_VIDEO = 2;
     
-    public static Action<String> sResult;
+    public static Action<AlbumCameraFile> sResult;
     public static Action<String> sCancel;
     
     private int mFunction;
@@ -187,7 +188,7 @@ public class CameraActivity extends BaseActivity {
     
     private void callbackResult() {
         if (sResult != null) {
-            sResult.onAction(mCameraFilePath);
+            sResult.onAction(AlbumCameraFile.getAlbumCameraFile(this.getApplicationContext(), mCameraFilePath));
         }
         sResult = null;
         sCancel = null;

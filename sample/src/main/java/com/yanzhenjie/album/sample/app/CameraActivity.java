@@ -17,11 +17,6 @@ package com.yanzhenjie.album.sample.app;
 
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -30,8 +25,14 @@ import android.widget.Toast;
 
 import com.yanzhenjie.album.Action;
 import com.yanzhenjie.album.Album;
-import com.yanzhenjie.album.app.album.data.MediaReader;
+import com.yanzhenjie.album.AlbumCameraFile;
 import com.yanzhenjie.album.sample.R;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 /**
  * Created by YanZhenjie on 2017/8/17.
@@ -59,13 +60,13 @@ public class CameraActivity extends AppCompatActivity {
         Album.camera(this)
             .image()
             //                .filePath()
-            .onResult(new Action<String>() {
+            .onResult(new Action<AlbumCameraFile>() {
                 @Override
-                public void onAction(@NonNull String result) {
-                    mTextView.setText(result);
+                public void onAction(@NonNull AlbumCameraFile result) {
+                    mTextView.setText(result.toString());
                     Album.getAlbumConfig()
                         .getAlbumLoader()
-                        .load(mImageView,Uri.parse(result) );
+                        .load(mImageView, result.getUri());
                 }
             })
             .onCancel(new Action<String>() {
@@ -84,14 +85,14 @@ public class CameraActivity extends AppCompatActivity {
             .quality(1)
             .limitDuration(Integer.MAX_VALUE)
             .limitBytes(Integer.MAX_VALUE)
-            .onResult(new Action<String>() {
+            .onResult(new Action<AlbumCameraFile>() {
                 @Override
-                public void onAction(@NonNull String result) {
-                    mTextView.setText(result);
+                public void onAction(@NonNull AlbumCameraFile result) {
+                    mTextView.setText(result.toString());
                     
                     Album.getAlbumConfig()
                         .getAlbumLoader()
-                        .load(mImageView,Uri.parse(result) );
+                        .load(mImageView, result.getUri());
                 }
             })
             .onCancel(new Action<String>() {

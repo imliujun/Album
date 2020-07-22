@@ -19,9 +19,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -41,6 +38,9 @@ import com.yanzhenjie.album.AlbumLoader;
 import com.yanzhenjie.album.sample.photoview.AttacherImageView;
 import com.yanzhenjie.album.sample.photoview.PhotoViewAttacher;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Created by Yan Zhenjie on 2017/3/31.
  */
@@ -54,7 +54,20 @@ public class FrescoLoader implements AlbumLoader {
     @Override
     public void load(ImageView imageView, Uri uri) {
         if (imageView instanceof SimpleDraweeView) {
-            ((SimpleDraweeView)imageView).setImageURI(uri);
+            ((SimpleDraweeView) imageView).setImageURI(uri);
+        } else {
+            try {
+                SimpleDraweeView simpleDraweeView = FrescoUtils.getDraweeView(imageView, imageView.getClass());
+                if (simpleDraweeView != null) {
+                    simpleDraweeView.getHierarchy().setPlaceholderImage(R.drawable.placeholder);
+                    simpleDraweeView.getHierarchy().setFailureImage(R.drawable.placeholder);
+                    simpleDraweeView.setImageURI(uri);
+                } else {
+                    imageView.setImageURI(uri);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
     

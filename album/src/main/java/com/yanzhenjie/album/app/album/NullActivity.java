@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 
 import com.yanzhenjie.album.Action;
 import com.yanzhenjie.album.Album;
+import com.yanzhenjie.album.AlbumCameraFile;
 import com.yanzhenjie.album.R;
 import com.yanzhenjie.album.api.widget.Widget;
 import com.yanzhenjie.album.app.Contract;
@@ -34,8 +35,8 @@ public class NullActivity extends BaseActivity implements Contract.NullPresenter
     
     private static final String KEY_OUTPUT_IMAGE_PATH = "KEY_OUTPUT_IMAGE_PATH";
     
-    public static String parsePath(Intent intent) {
-        return intent.getStringExtra(KEY_OUTPUT_IMAGE_PATH);
+    public static AlbumCameraFile parseAlbumCameraFile(Intent intent) {
+        return intent.getParcelableExtra(KEY_OUTPUT_IMAGE_PATH);
     }
     
     private Widget mWidget;
@@ -109,9 +110,9 @@ public class NullActivity extends BaseActivity implements Contract.NullPresenter
             .start();
     }
     
-    private Action<String> mCameraAction = new Action<String>() {
+    private Action<AlbumCameraFile> mCameraAction = new Action<AlbumCameraFile>() {
         @Override
-        public void onAction(@NonNull String result) {
+        public void onAction(@NonNull AlbumCameraFile result) {
             Intent intent = new Intent();
             intent.putExtra(KEY_OUTPUT_IMAGE_PATH, result);
             setResult(RESULT_OK, intent);
