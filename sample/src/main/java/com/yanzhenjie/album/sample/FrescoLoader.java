@@ -55,19 +55,6 @@ public class FrescoLoader implements AlbumLoader {
     public void load(ImageView imageView, Uri uri) {
         if (imageView instanceof SimpleDraweeView) {
             ((SimpleDraweeView) imageView).setImageURI(uri);
-        } else {
-            try {
-                SimpleDraweeView simpleDraweeView = FrescoUtils.getDraweeView(imageView, imageView.getClass());
-                if (simpleDraweeView != null) {
-                    simpleDraweeView.getHierarchy().setPlaceholderImage(R.drawable.placeholder);
-                    simpleDraweeView.getHierarchy().setFailureImage(R.drawable.placeholder);
-                    simpleDraweeView.setImageURI(uri);
-                } else {
-                    imageView.setImageURI(uri);
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
         }
     }
     

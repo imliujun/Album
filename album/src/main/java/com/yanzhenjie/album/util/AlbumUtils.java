@@ -173,10 +173,7 @@ public class AlbumUtils {
      * @return the uri address of the file.
      */
     @NonNull
-    public static Uri getUri(@NonNull Context context, String outPath) {
-        if (outPath == null) {
-            outPath = "";
-        }
+    public static Uri getUri(@NonNull Context context, @NonNull String outPath) {
         return getUri(context, new File(outPath));
     }
     
@@ -186,7 +183,7 @@ public class AlbumUtils {
      * @return file path.
      */
     @NonNull
-    public static String randomJPGPath(Context context) {
+    public static String randomJPGPath(@NonNull Context context) {
         return randomJPGPath(getAlbumRootPath(context));
     }
     
@@ -197,7 +194,7 @@ public class AlbumUtils {
      * @return file path.
      */
     @NonNull
-    public static String randomJPGPath(File bucket) {
+    public static String randomJPGPath(@NonNull File bucket) {
         String outFileName = AlbumUtils.getNowDateTime("yyyyMMdd_HHmmssSSS") + "_" + getMD5ForString(UUID.randomUUID().toString()) + ".jpg";
         if (bucket.exists() && bucket.isFile()) {
             bucket.delete();
@@ -216,7 +213,7 @@ public class AlbumUtils {
      * @return file path.
      */
     @NonNull
-    public static String randomMP4Path(Context context) {
+    public static String randomMP4Path(@NonNull Context context) {
         return randomMP4Path(getAlbumRootPath(context));
     }
     
@@ -226,7 +223,7 @@ public class AlbumUtils {
      * @return file path.
      */
     @NonNull
-    public static String randomMP4Path(File bucket) {
+    public static String randomMP4Path(@NonNull File bucket) {
         String outFileName = AlbumUtils.getNowDateTime("yyyyMMdd_HHmmssSSS") + "_" + getMD5ForString(UUID.randomUUID().toString()) + ".mp4";
         if (bucket.exists() && bucket.isFile()) {
             bucket.delete();

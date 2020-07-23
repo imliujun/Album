@@ -41,7 +41,7 @@ public class AlbumCameraFile implements Parcelable {
      */
     private Uri uri;
     /**
-     * File uri.
+     * File path.
      */
     private String path;
     
