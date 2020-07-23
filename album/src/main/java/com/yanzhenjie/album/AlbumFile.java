@@ -18,23 +18,25 @@ package com.yanzhenjie.album;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.IntDef;
 
 /**
  * Created by YanZhenjie on 2017/8/15.
  */
 public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
-
+    
     public static final int TYPE_IMAGE = 1;
     public static final int TYPE_VIDEO = 2;
-
+    
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({TYPE_IMAGE, TYPE_VIDEO})
     public @interface MediaType {
     }
+    
     /**
      * File uri.
      */
@@ -83,20 +85,21 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
      * Enabled.
      */
     private boolean isDisable;
-
+    
     public AlbumFile() {
     }
-
+    
     @Override
     public int compareTo(AlbumFile o) {
         long time = o.getAddDate() - getAddDate();
-        if (time > Integer.MAX_VALUE)
+        if (time > Integer.MAX_VALUE) {
             return Integer.MAX_VALUE;
-        else if (time < -Integer.MAX_VALUE)
+        } else if (time < -Integer.MAX_VALUE) {
             return -Integer.MAX_VALUE;
+        }
         return (int) time;
     }
-
+    
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj instanceof AlbumFile) {
@@ -108,7 +111,7 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
         }
         return super.equals(obj);
     }
-
+    
     @Override
     public int hashCode() {
         return uri != null ? uri.hashCode() : super.hashCode();
@@ -121,92 +124,92 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
     public void setUri(Uri uri) {
         this.uri = uri;
     }
-
+    
     public String getBucketName() {
         return mBucketName;
     }
-
+    
     public void setBucketName(String bucketName) {
         mBucketName = bucketName;
     }
-
+    
     public String getMimeType() {
         return mMimeType;
     }
-
+    
     public void setMimeType(String mimeType) {
         mMimeType = mimeType;
     }
-
+    
     public long getAddDate() {
         return mAddDate;
     }
-
+    
     public void setAddDate(long addDate) {
         mAddDate = addDate;
     }
-
+    
     public float getLatitude() {
         return mLatitude;
     }
-
+    
     public void setLatitude(float latitude) {
         mLatitude = latitude;
     }
-
+    
     public float getLongitude() {
         return mLongitude;
     }
-
+    
     public void setLongitude(float longitude) {
         mLongitude = longitude;
     }
-
+    
     public long getSize() {
         return mSize;
     }
-
+    
     public void setSize(long size) {
         mSize = size;
     }
-
+    
     public long getDuration() {
         return mDuration;
     }
-
+    
     public void setDuration(long duration) {
         mDuration = duration;
     }
-
+    
     public Uri getThumbUri() {
         return mThumbUri;
     }
-
-    public void setThumbPath(Uri thumbUri) {
-        mThumbUri = thumbUri;
+    
+    public void setThumbUri(Uri thumbUri) {
+        this.mThumbUri = thumbUri;
     }
-
+    
     @MediaType
     public int getMediaType() {
         return mMediaType;
     }
-
+    
     public void setMediaType(@MediaType int mediaType) {
         mMediaType = mediaType;
     }
-
+    
     public boolean isChecked() {
         return isChecked;
     }
-
+    
     public void setChecked(boolean checked) {
         isChecked = checked;
     }
-
+    
     public boolean isDisable() {
         return isDisable;
     }
-
+    
     public void setDisable(boolean disable) {
         this.isDisable = disable;
     }
