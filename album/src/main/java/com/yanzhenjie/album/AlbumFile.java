@@ -19,6 +19,9 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntDef;
+
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -36,7 +39,7 @@ public class AlbumFile implements Parcelable, Comparable<AlbumFile> {
     @IntDef({TYPE_IMAGE, TYPE_VIDEO})
     public @interface MediaType {
     }
-    
+
     /**
      * File uri.
      */

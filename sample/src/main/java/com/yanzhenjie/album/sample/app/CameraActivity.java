@@ -15,6 +15,7 @@
  */
 package com.yanzhenjie.album.sample.app;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
